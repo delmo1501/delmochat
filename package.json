@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start:fe": "react-scripts start",
-    "start": "node server/server.js",
+    "start": "node server.js",
     "heroku-postbuild": "react-scripts build",
     "build": "react-scripts build",
     "test": "react-scripts test",
