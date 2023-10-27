@@ -7,7 +7,7 @@ import { createServer } from 'http';
 
 dotenv.config();
 
-const port = process.env.PORT ?? 3001;
+const PORT = process.env.PORT ?? 3000;
 
 const app = express();
 const server = createServer(app);
@@ -21,7 +21,7 @@ const io = new Server(server, {
 
 const db = createClient({
     url: "libsql://genuine-savant-delmo1501.turso.io",
-    authToken: process.env.DB_TOKEN
+    authToken: process.env.DB_TOKEN,
 });
 
 async function initDatabase() {
@@ -91,6 +91,6 @@ app.get('/', (req, res) => {
  // Change this to serve your React frontend if required
 });
 
-server.listen(port, () => {
+server.listen(PORT, () => {
     console.log('server running');
 });
