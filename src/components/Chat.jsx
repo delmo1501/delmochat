@@ -2,35 +2,36 @@ import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = "http://localhost:3001"; // replace with your server URL
+const SERVER_URL = "http://localhost:3000";
 
 function Chat() {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [socket, setSocket] = useState(null);
-    console.log(messages);
     useEffect(() => {
         const fetchUsername = async () => {
             const storedUsername = localStorage.getItem('username');
             if (storedUsername) return storedUsername;
-
             const response = await fetch('https://random-data-api.com/api/users/random_user');
             const data = await response.json();
+            console.log('data', data.username);
             localStorage.setItem('username', data.username);
             return data.username;
         };
 
-        const username = fetchUsername();
-        const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username } });
-        setSocket(newSocket);
+        (async () => {
+            const username = await fetchUsername();
+            const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username } });
+            setSocket(newSocket);
 
-        newSocket.on('chat message', (msg, serverOffset, username) => {
-            setMessages(prev => [...prev, { msg, serverOffset, username }]);
-        });
+            newSocket.on('chat message', (msg, id, username) => {
+                setMessages(prev => [...prev, { msg, id, username }]);
+            });
 
-        return () => {
-            newSocket.disconnect();
-        };
+            return () => {
+                newSocket.disconnect();
+            };
+        })();
     }, []);
 
     const handleSubmit = e => {
@@ -41,7 +42,9 @@ function Chat() {
             setInputValue('');
         }
     };
-
+    useEffect(() => {
+        console.log(messages);
+    }, [messages]);
     return (
         <section className="bg-white border rounded shadow-md max-w-md mx-auto mt-10 p-4">
             <MessageList messages={messages} />
