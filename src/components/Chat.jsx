@@ -7,24 +7,34 @@ const SERVER_URL = "http://localhost:3000";
 function Chat() {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
-    const [socket, setSocket] = useState(null);
+    const [socket, setSocket] = useState(null);  
+    const sessionID = useState(() => {
+        let sID = sessionStorage.getItem('sessionID');
+        if (!sID) {
+            sID = Math.random().toString(36).substr(2, 9); // generate a random string
+            sessionStorage.setItem('sessionID', sID);
+        }
+        return sID;
+    })[0];
+
     useEffect(() => {
         const fetchUsername = async () => {
-            const storedUsername = localStorage.getItem('username');
+            const storedUsername = sessionStorage.getItem('username');
             if (storedUsername) return storedUsername;
             const response = await fetch('https://random-data-api.com/api/users/random_user');
             const data = await response.json();
             console.log('data', data.username);
-            localStorage.setItem('username', data.username);
+            sessionStorage.setItem('username', data.username);
             return data.username;
         };
 
         (async () => {
             const username = await fetchUsername();
-            const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username } });
+            const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username, sessionID } });
             setSocket(newSocket);
 
             newSocket.on('chat message', (msg, id, username) => {
+                console.log('Received message from backend:', msg, id, username);
                 setMessages(prev => [...prev, { msg, id, username }]);
             });
 
@@ -39,12 +49,17 @@ function Chat() {
 
         if (inputValue && socket) {
             socket.emit('chat message', inputValue);
+            
+            // // Add the sent message to the local state
+            // const username = localStorage.getItem('username') || 'anonymous';
+            // setMessages(prev => [...prev, { msg: inputValue, id: new Date().toISOString(), username }]);
             setInputValue('');
-        }
+        }        
     };
     useEffect(() => {
         console.log(messages);
     }, [messages]);
+    
     return (
         <section className="bg-white border rounded shadow-md max-w-md mx-auto mt-10 p-4">
             <MessageList messages={messages} />
