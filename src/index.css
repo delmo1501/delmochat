@@ -19,3 +19,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Header.css */
+.header-text {
+  color: blue;
+  font-size: 24px;
+  font-family: "Audiowide", sans-serif;
+  border: 2px solid white;
+  border-radius: 3px;
+  padding: 5px;
+  display: inline-block; /* border wraps around the text */
+  transition: all 0.3s; 
+}
+
+.header-text:hover {
+  color: lightblue;
+}

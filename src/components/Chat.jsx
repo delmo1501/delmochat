@@ -8,6 +8,7 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [socket, setSocket] = useState(null);  
+    
     const sessionID = useState(() => {
         let sID = sessionStorage.getItem('sessionID');
         if (!sID) {
@@ -17,32 +18,79 @@ function Chat() {
         return sID;
     })[0];
 
+    // useEffect(() => {
+    //     const fetchUsername = async () => {
+    //         const storedUsername = sessionStorage.getItem('username');
+    //         if (storedUsername) return storedUsername;
+    //         const response = await fetch('https://random-data-api.com/api/users/random_user');
+    //         const data = await response.json();
+    //         console.log('data', data.username);
+    //         sessionStorage.setItem('username', data.username);
+    //         return data.username;
+    //     };
+
+    //     (async () => {
+    //         const username = await fetchUsername();
+    //         const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username, sessionID } });
+    //         setSocket(newSocket);
+
+    //         newSocket.on('chat message', (msg, id, username) => {
+    //             console.log('Received message from backend:', msg, id, username);
+    //             setMessages(prev => [...prev, { msg, id, username }]);
+    //         });
+
+    //         return () => {
+    //             newSocket.disconnect();
+    //         };
+    //     })();
+    // }, []);
     useEffect(() => {
-        const fetchUsername = async () => {
-            const storedUsername = sessionStorage.getItem('username');
-            if (storedUsername) return storedUsername;
-            const response = await fetch('https://random-data-api.com/api/users/random_user');
-            const data = await response.json();
-            console.log('data', data.username);
-            sessionStorage.setItem('username', data.username);
-            return data.username;
-        };
-
-        (async () => {
-            const username = await fetchUsername();
-            const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username, sessionID } });
-            setSocket(newSocket);
-
-            newSocket.on('chat message', (msg, id, username) => {
-                console.log('Received message from backend:', msg, id, username);
-                setMessages(prev => [...prev, { msg, id, username }]);
-            });
-
-            return () => {
-                newSocket.disconnect();
+        // Check if the socket is already initialized
+        if (!socket) {
+            // Function to fetch the username
+            const fetchUsername = async () => {
+                // Check if a username is stored in sessionStorage
+                const storedUsername = sessionStorage.getItem('username');
+                if (storedUsername) {
+                    return storedUsername;
+                }
+                // If no username is stored, fetch a random username
+                const response = await fetch('https://random-data-api.com/api/users/random_user');
+                const data = await response.json();
+                const randomUsername = data.username;
+    
+                // Store the fetched username in sessionStorage
+                sessionStorage.setItem('username', randomUsername);
+    
+                return randomUsername;
             };
-        })();
-    }, []);
+    
+            // Inside an async function, fetch the username
+            (async () => {
+                const username = await fetchUsername();
+                
+                // Create a new socket with the username and session ID
+                const newSocket = io(SERVER_URL, {
+                    auth: { serverOffset: 0, username, sessionID },
+                });
+                
+                // Set the new socket in the component state
+                setSocket(newSocket);
+    
+                // Register an event listener for chat messages
+                newSocket.on('chat message', (msg, id, username) => {
+                    console.log('Received message from backend:', msg, id, username);
+                    setMessages(prev => [...prev, { msg, id, username }]);
+                });
+    
+                // Return a cleanup function to disconnect the socket when the component unmounts
+                return () => {
+                    newSocket.disconnect();
+                };
+            })();
+        }
+    }, [socket, sessionID]);
+    
 
     const handleSubmit = e => {
         e.preventDefault();
