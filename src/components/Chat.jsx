@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = process.env.REACT_APP_BACKEND_URL;
+const SERVER_URL = 'https://delmo-node-deploy-40a812c3b5f7.herokuapp.com/';
 
 function Chat() {
     const [messages, setMessages] = useState([]);
