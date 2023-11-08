@@ -18,32 +18,6 @@ function Chat() {
         return sID;
     })[0];
 
-    // useEffect(() => {
-    //     const fetchUsername = async () => {
-    //         const storedUsername = sessionStorage.getItem('username');
-    //         if (storedUsername) return storedUsername;
-    //         const response = await fetch('https://random-data-api.com/api/users/random_user');
-    //         const data = await response.json();
-    //         console.log('data', data.username);
-    //         sessionStorage.setItem('username', data.username);
-    //         return data.username;
-    //     };
-
-    //     (async () => {
-    //         const username = await fetchUsername();
-    //         const newSocket = io(SERVER_URL, { auth: { serverOffset: 0, username, sessionID } });
-    //         setSocket(newSocket);
-
-    //         newSocket.on('chat message', (msg, id, username) => {
-    //             console.log('Received message from backend:', msg, id, username);
-    //             setMessages(prev => [...prev, { msg, id, username }]);
-    //         });
-
-    //         return () => {
-    //             newSocket.disconnect();
-    //         };
-    //     })();
-    // }, []);
     useEffect(() => {
         // Check if the socket is already initialized
         if (!socket) {
