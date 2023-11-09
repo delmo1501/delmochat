@@ -39,25 +39,22 @@ function Chat() {
                 return randomUsername;
             };
     
-            // Inside an async function, fetch the username
+            //fetch the username
             (async () => {
                 const username = await fetchUsername();
-                
-                // Create a new socket with the username and session ID
                 const newSocket = io(SERVER_URL, {
                     auth: { serverOffset: 0, username, sessionID },
                 });
-                
-                // Set the new socket in the component state
+           
+                //new socket in the component state
                 setSocket(newSocket);
     
-                // Register an event listener for chat messages
+                //event listener for chat messages
                 newSocket.on('chat message', (msg, id, username) => {
                     console.log('Received message from backend:', msg, id, username);
                     setMessages(prev => [...prev, { msg, id, username }]);
                 });
-    
-                // Return a cleanup function to disconnect the socket when the component unmounts
+                //component unmounts => disconnect socket
                 return () => {
                     newSocket.disconnect();
                 };
