@@ -35,3 +35,6 @@ code {
 .header-text:hover {
   color: lightblue;
 }
+.button-width {
+  width: 75px;
+}

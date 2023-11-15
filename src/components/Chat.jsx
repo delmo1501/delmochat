@@ -75,9 +75,8 @@ function Chat() {
             setInputValue('');
         }        
     };
-    useEffect(() => {
         console.log(messages);
-    }, [messages]);
+
     
     return (
         <section className="bg-white border rounded shadow-md max-w-md mx-auto mt-10 p-4">
