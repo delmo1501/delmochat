@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
+import {Button} from "@nextui-org/react";
 import { io } from 'socket.io-client';
 
 const SERVER_URL = 'https://delmo-node-deploy-40a812c3b5f7.herokuapp.com/';
 
-function Chat() {
+function Chat(user) {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [socket, setSocket] = useState(null);  
@@ -65,17 +66,14 @@ function Chat() {
 
     const handleSubmit = e => {
         e.preventDefault();
-
+        console.log('entered', user.user.username, user.user.id, user);
         if (inputValue && socket) {
-            socket.emit('chat message', inputValue);
-            
-            // // Add the sent message to the local state
-            // const username = localStorage.getItem('username') || 'anonymous';
-            // setMessages(prev => [...prev, { msg: inputValue, id: new Date().toISOString(), username }]);
+            socket.emit('chat message', { id: new Date().toISOString(), content: inputValue, user_id: user.user.id });
+            console.log('socket emitio');
             setInputValue('');
         }        
     };
-        console.log(messages);
+    console.log(user);
 
     
     return (
@@ -89,7 +87,7 @@ function Chat() {
                     placeholder="Type a message" 
                     className="flex-grow p-2 mr-2 border rounded" 
                 />
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Send</button>
+                <Button type="submit" size="small" color="primary">Send</Button>
             </form>
         </section>
     );
